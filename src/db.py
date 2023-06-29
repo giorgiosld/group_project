@@ -24,13 +24,14 @@ def db_context():
     
     yield cursor
 
+    conn.commit()
     cursor.close()
     conn.close()
 
 def result_query(name):
     query = f"""
         SELECT title, grade FROM exams ex
-        JOIN student s
+        JOIN students s
         ON s.id = ex.student_id
         WHERE s.name='{name}';
     """
