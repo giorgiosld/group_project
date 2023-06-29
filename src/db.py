@@ -3,7 +3,7 @@ import logging
 import os
 import contextlib
 
-DATABASE = os.path.realpath("data/test.db")
+DATABASE = os.path.realpath("/home/giorgiosld/university/bachelor/group_project/data/test.db")
 logger = logging.getLogger(__name__)
 
 
@@ -29,17 +29,17 @@ def db_context():
 
 def result_query(name):
     query = f"""
-        SELECT title, grade FROM advancedprogramming pa
+        SELECT title, grade FROM exams ex
         JOIN student s
-        ON s.id = pa.user_id
-        WHERE u.name='{name}';
+        ON s.id = ex.student_id
+        WHERE s.name='{name}';
     """
     print("-" * 50)
-    print(f"[bold]Executing query:[/bold] [green]{query}[/green]")
-    print(f"[bold]{'-' * 50}[/bold]")
+    print(f"Executing query: {query}")
+    print("-" * 50)
 
-    with db_context() as conn:
-        conn.execute(query)
-        results = conn.fetchall()
+    with db_context() as cursor:
+        cursor.execute(query)
+        results = cursor.fetchall()
 
         return results

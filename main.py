@@ -1,5 +1,6 @@
 from flask import Flask, request
-from db import result_query
+from src.db import result_query
+from src.schema import create_db
 import os
 
 app = Flask(__name__)
@@ -15,14 +16,14 @@ def index():
          <li>Directory Traversal</li>
          <li>Cross Site Scripting</li>
          <li>Server Side Requests Forgery</li>
-      </ul>
+      </ul>/home/giorgiosld/university/bachelor/group_project
    '''
    return about
 
 @app.get('/sqli/<name>')
 def query(name):
-   print(f"[bold]{'-' * 50}[/bold]")
-   print(f"[bold]Passing input:[/bold] [yellow]{name}[/yellow]")
+   print("-" * 50)
+   print(f"Passing input: {name}")
 
    exams = result_query(name)
    output = [f"<li>{title}: grade {grade}</li>" for title, grade in exams]
@@ -56,4 +57,5 @@ def search_files():
    return form
 
 if __name__ == '__main__':
-    app.run(port=80, debug=True)
+   create_db()
+   app.run(port=80, debug=True)
