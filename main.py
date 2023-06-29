@@ -1,5 +1,5 @@
 from flask import Flask, request
-
+from db import result_query
 import os
 
 app = Flask(__name__)
@@ -19,31 +19,31 @@ def index():
    '''
    return about
 
-@app.get('/sqli')
-def query():
-   form = f"""
-   <html>
-      <body>
-         <form action = "sqli" method = "GET">
-            <p><h3>Enter a file to search into server</h3></p>
-            <p><input type = 'text' name = 'filename'/></p>
-            <p><input type = 'submit' value = 'Search'/></p>
-         </form>
-      </body>
-   </html>
+@app.get('/sqli/<name>')
+def query(name):
+   print(f"[bold]{'-' * 50}[/bold]")
+   print(f"[bold]Passing input:[/bold] [yellow]{name}[/yellow]")
+
+   exams = result_query(name)
+   output = [f"<li>{title}: grade {grade}</li>" for title, grade in exams]
+
+   disclaimer = f"""
+      <p>Here are the result of exams I got for student:
+         <pre><blockquote>{name}</blockquote></pre>
+      </p>
    """
-   return form
+   return f"{disclaimer}<br/><h3>Results</h3><ol>{''.join(output)}</ol>"
 
 @app.get('/commandinjection')
 def search_files():
    form = f"""
    <html>
       <body>
-         <form action = "commandinjection" method = "GET">
-            <p><h3>Enter a file to search into server</h3></p>
-            <p><input type = 'text' name = 'filename'/></p>
-            <p><input type = 'submit' value = 'Search'/></p>
-         </form>
+   <form action = "commandinjection" method = "GET">
+      <p><h3>Enter a file to search into server</h3></p>
+      <p><input type = 'text' name = 'filename'/></p>
+      <p><input type = 'submit' value = 'Search'/></p>
+   </form>
       </body>
    </html>
    """
