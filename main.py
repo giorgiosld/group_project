@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 from src.db import result_query
 from src.schema import create_db
 import os
@@ -12,14 +12,25 @@ def index():
       <h1>Home page</h1>
       <p>This is a simply web server created to demonstrate the most commons injection attacks</p>
       <ul>
-         <li><a href="/sqli">SQL Injection</a></li>
-         <li><a href="/commandinjection">Command Injection</a></li>
-         <li>Directory Traversal</li>
-         <li>Cross Site Scripting</li>
+         <li><a href="/sql">SQL Injection</a></li>
+         <li><a href="/injection">Command Injection</a></li>
+         <li><a href="/traversal">Directory Traversal</a></li>
          <li><a href="/ssrf">Server Side Requests Forgery</a></li>
-      </ul>/home/giorgiosld/university/bachelor/group_project
+      </ul>
    '''
    return about
+
+@app.get('/sql')
+def sql():
+   form = f"""
+   <form action = "sqli" method = "GET">
+      <p><h3>Enter an input to see the magic!</h3></p>
+      <p><input type = 'text' name = 'query'/></p>
+      <p><input type = 'submit' value = 'Search'/></p>
+   </form>
+   """
+   return form
+
 
 @app.get('/sqli/<name>')
 def sqli(name):
@@ -36,11 +47,11 @@ def sqli(name):
    """
    return f"{disclaimer}<br/><h3>Results</h3><ol>{''.join(output)}</ol>"
 
-@app.get('/commandinjection')
+@app.get('/injection')
 def command_injection():
    form = f"""
-   <form action = "commandinjection" method = "GET">
-      <p><h3>Enter a file to search into server</h3></p>
+   <form action = "injection" method = "GET">
+      <p><h3>Enter an input to see the magic!</h3></p>
       <p><input type = 'text' name = 'filename'/></p>
       <p><input type = 'submit' value = 'Search'/></p>
    </form>
@@ -53,11 +64,26 @@ def command_injection():
       
    return form
 
+@app.get('/traversal')
+def traversal():
+   form = f"""
+   <form action = "traversal" method = "GET">
+      <p><h3>Enter an image's name to see the magic![eg. master_degree.jpeg]</h3></p>
+      <p><input type = 'text' name = 'filename'/></p>
+      <p><input type = 'submit' value = 'Search'/></p>
+   </form>
+   """
+   if request.args.get('filename'):
+      filename = request.args.get('filename')
+      return send_file(filename)
+   return form
+
+
 @app.get('/ssrf')
 def ssrf():
    form = f"""
    <form action = "ssrf" method = "GET">
-      <p><h3>Enter a file to search into server</h3></p>
+      <p><h3>Do you wanna see the magic?</h3></p>
       <p><input type = 'text' name = 'url'/></p>
       <p><input type = 'submit' value = 'Search'/></p>
    </form>
