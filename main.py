@@ -1,11 +1,21 @@
+'''
+@uthor: Giorgio Saldana @email: giorgio.saldana@studenti.unicam.it
+
+Questo file contiene il core del web server con la definizione delle varie routes
+e della logica di ciascun componente. Richiama al suo interno altri file quali sono
+necessari per poter avviare il DB e il web server in generale
+
+'''
 from flask import Flask, request, send_file
 from src.db import result_query
 from src.schema import create_db
 import os
 import requests
 
+# richiama il framework Flask
 app = Flask(__name__)
 
+# route principale del web server, da qui si può navigare verso le varie challenge
 @app.get("/")
 def index():
    about = '''
@@ -20,6 +30,7 @@ def index():
    '''
    return about
 
+# route riguardante l'SQLi, vi è presente un form dalla quale si può interrogare il DB
 @app.get('/sql')
 def sql():
    form = f"""
@@ -31,7 +42,7 @@ def sql():
    """
    return form
 
-
+# route "vulnerabile" all'SQLi, dopo aver elaborato la query manda in output il risultato di essa
 @app.get('/sqli/<name>')
 def sqli(name):
    print("-" * 50)
@@ -47,6 +58,7 @@ def sqli(name):
    """
    return f"{disclaimer}<br/><h3>Results</h3><ol>{''.join(output)}</ol>"
 
+# route relativa al command injection, permette di eseguire un comando non desiderato una volta exploitato
 @app.get('/injection')
 def command_injection():
    form = f"""
@@ -64,6 +76,7 @@ def command_injection():
       
    return form
 
+# route relativa al Directional Path Attack, vi è incluso l'utilizzo di una funzione "non sicura", quale permette di navigare all'interno del file system del server
 @app.get('/traversal')
 def traversal():
    form = f"""
@@ -78,7 +91,7 @@ def traversal():
       return send_file(filename)
    return form
 
-
+# route relativa all'SSRF attack permette l'esecuzione dell'attacco SSRF dovuto ad una mancata "pulizia" dell'output
 @app.get('/ssrf')
 def ssrf():
    form = f"""
@@ -93,6 +106,7 @@ def ssrf():
       return requests.get(url).text
    return form
 
+# funzione principale che inizializza il database per poi eseguire l'applicazione in Flask
 if __name__ == '__main__':
    create_db()
    app.run(port=80, debug=True)

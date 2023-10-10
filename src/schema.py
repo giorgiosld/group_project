@@ -1,3 +1,10 @@
+'''
+@uthor: Giorgio Saldana @email: giorgio.saldana@studenti.unicam.it
+
+Questo file contiene il core del database, si avrà una definizione delle varie tabelle, con la
+relativa aggiunta di dati al suo interno
+
+'''
 from .db import db_context
 from .model import Student
 from random import randint
@@ -35,6 +42,7 @@ EXAMS_DATA = [
     "Mathematics Analysis"
 ]
 
+# funzione logica che permette di creare le tabelle utilizzando i comandi DDL e DML nativi in SQL
 def create_db():
     with db_context() as cursor:
         cursor.execute(CREATE_TABLE_STUDENT)
